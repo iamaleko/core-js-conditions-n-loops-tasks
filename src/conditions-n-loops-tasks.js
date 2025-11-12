@@ -395,8 +395,29 @@ function sortByAsc(_arr) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  const half = Math.ceil(str.length / 2);
+  const chars = [];
+  for (let period, position, i = 0; i < str.length; i += 1) {
+    position = i;
+    period = 0;
+    do {
+      position = position % 2 ? half + Math.trunc(position / 2) : position / 2;
+      period += 1;
+    } while (position !== i && period < iterations);
+    if (period !== iterations) {
+      for (let j = iterations % period; j; j -= 1) {
+        position =
+          position % 2 ? half + Math.trunc(position / 2) : position / 2;
+      }
+    }
+    chars[position] = str[i];
+  }
+  let ans = '';
+  for (let i = 0; i < str.length; i += 1) {
+    ans += chars[i];
+  }
+  return ans;
 }
 
 /**
@@ -417,8 +438,44 @@ function shuffleChar(/* str, iterations */) {
  * 321321   => 322113
  *
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(num) {
+  const d = [];
+  const str = String(num);
+  for (let i = 0; i < str.length; i += 1) d[i] = Number(str[i]);
+
+  const pos = [];
+  const cnt = [];
+  for (let i = str.length - 1; i >= 0; i -= 1) {
+    if (pos[d[i]] === undefined) {
+      pos[d[i]] = i;
+    }
+
+    cnt[d[i]] = (cnt[d[i]] ?? 0) + 1;
+
+    for (let j = d[i] + 1; j < 10; j += 1) {
+      if (pos[j] !== undefined) {
+        cnt[d[pos[j]]] -= 1;
+        [d[i], d[pos[j]]] = [d[pos[j]], d[i]];
+
+        let p = 0;
+        for (let k = i + 1; k < d.length; k += 1) {
+          while (!cnt[p]) {
+            p += 1;
+          }
+          cnt[p] -= 1;
+          d[k] = p;
+        }
+
+        let ans = 0;
+        for (i = 0; i < d.length; i += 1) {
+          ans *= 10;
+          ans += d[i];
+        }
+        return ans;
+      }
+    }
+  }
+  return num;
 }
 
 module.exports = {
